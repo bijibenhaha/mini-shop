@@ -1,0 +1,44 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: mini-gateway
+  config:
+    import:
+      - optional:nacos:${spring.application.name}.yaml?group=DEFAULT_GROUP
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+      config:
+        server-addr: 127.0.0.1:8848
+        file-extension: yaml
+        prefix: ${spring.application.name}
+        group: DEFAULT_GROUP
+    gateway:
+      routes:
+        - id: user-service
+          uri: lb://mini-user-service
+          predicates:
+            - Path=/api/user/**
+        - id: product-service
+          uri: lb://mini-product-service
+          predicates:
+            - Path=/api/product/**
+        - id: order-service
+          uri: lb://mini-order-service
+          predicates:
+            - Path=/api/order/**
+    sentinel:
+      transport:
+        dashboard: 127.0.0.1:8081
+      scg:
+        fallback:
+          mode: response
+          response-status: 429
+          response-body: '{"code":5010,"msg":"request too frequent, please try later","data":null}'
+
+logging:
+  level:
+    com.mini.gateway: debug

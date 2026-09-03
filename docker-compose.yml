@@ -1,0 +1,87 @@
+services:
+  # ============ MySQL ============
+  mysql:
+    image: mysql:8.4
+    container_name: mini-mysql
+    platform: linux/amd64
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./sql/init-user.sql:/docker-entrypoint-initdb.d/01-init-user.sql
+      - ./sql/init-product.sql:/docker-entrypoint-initdb.d/02-init-product.sql
+      - ./sql/init-order.sql:/docker-entrypoint-initdb.d/03-init-order.sql
+      - ./sql/init-seata.sql:/docker-entrypoint-initdb.d/04-init-seata.sql
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - mini-shop-net
+
+  # ============ Nacos ============
+  nacos:
+    image: nacos/nacos-server:v2.3.1
+    container_name: mini-nacos
+    platform: linux/amd64
+    environment:
+      MODE: standalone
+      PREFER_HOST_MODE: hostname
+      MYSQL_SERVICE_HOST: mysql
+      MYSQL_SERVICE_DB_NAME: nacos_config
+      MYSQL_SERVICE_USER: root
+      MYSQL_SERVICE_PASSWORD: root
+      MYSQL_SERVICE_PORT: 3306
+      JVM_XMS: 256m
+      JVM_XMX: 512m
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - mini-shop-net
+
+  # ============ Sentinel Dashboard ============
+  sentinel:
+    image: bladex/sentinel-dashboard:1.8.8
+    container_name: mini-sentinel
+    platform: linux/amd64
+    environment:
+      JAVA_OPTS: "-Dserver.port=8081 -Dcsp.sentinel.dashboard.server=localhost:8081 -Dproject.name=sentinel-dashboard"
+    ports:
+      - "8081:8858"
+    networks:
+      - mini-shop-net
+
+  # ============ Seata Server ============
+  seata-server:
+    image: seataio/seata-server:2.0.0
+    container_name: mini-seata
+    platform: linux/amd64
+    environment:
+      SEATA_IP: 127.0.0.1
+      SEATA_PORT: 8091
+      STORE_MODE: db
+      SEATA_CONFIG_NAME: file:/root/seata-config/registry.conf
+    ports:
+      - "8091:8091"
+    volumes:
+      - ./seata/registry.conf:/root/seata-config/registry.conf
+      - ./seata/file.conf:/root/seata-config/file.conf
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - mini-shop-net
+
+volumes:
+  mysql-data:
+
+networks:
+  mini-shop-net:
+    driver: bridge
