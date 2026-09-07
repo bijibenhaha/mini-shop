@@ -25,7 +25,7 @@ spring:
       transport:
         dashboard: 127.0.0.1:8081
 
-# Seata 配置（直接连接模式）
+
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case: true
