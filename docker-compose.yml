@@ -60,16 +60,18 @@ services:
 
   # ============ Seata Server ============
   seata-server:
-    image: seataio/seata-server:2.0.0
+    image: apache/seata-server:2.5.0
     container_name: mini-seata
     platform: linux/amd64
     environment:
-      SEATA_IP: 127.0.0.1
+      # 删除 SEATA_IP:127.0.0.1，不要写死！让服务自动获取容器网络IP上报
       SEATA_PORT: 8091
       STORE_MODE: db
-      SEATA_CONFIG_NAME: file:/root/seata-config/registry.conf
+      # registry.conf + file.conf 在同一个目录，写目录即可
+      SEATA_CONFIG_NAME: file:/root/seata-config
     ports:
       - "8091:8091"
+      - "7091:7091"
     volumes:
       - ./seata/registry.conf:/root/seata-config/registry.conf
       - ./seata/file.conf:/root/seata-config/file.conf

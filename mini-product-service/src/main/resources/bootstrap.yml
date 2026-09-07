@@ -26,21 +26,6 @@ spring:
         dashboard: 127.0.0.1:8081
 
 # Seata 配置（直接连接模式）
-seata:
-  enabled: true
-  application-id: ${spring.application.name}
-  tx-service-group: mini-shop-tx-group
-  service:
-    vgroup-mapping:
-      mini-shop-tx-group: default
-    grouplist:
-      default: 127.0.0.1:8091
-  registry:
-    type: file
-  config:
-    type: file
-
-mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case: true

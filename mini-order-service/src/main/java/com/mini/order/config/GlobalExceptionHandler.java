@@ -12,7 +12,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public Result<Void> handleRuntimeException(RuntimeException e) {
-        log.error("Business exception: {}", e.getMessage());
+        log.error("Business exception: ", e);  // ✅ 打印完整堆栈
 
         // 匹配已知业务异常
         String msg = e.getMessage();

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface UserFeignClient {
 
     @GetMapping("/{userId}")
-    Result<UserDTO> getUser(@PathVariable Long userId);
+    Result<UserDTO> getUser(@PathVariable("userId") Long userId);
 
     @PostMapping("/deduct")
     Result<Void> deductBalance(@RequestBody DeductBalanceDTO dto);

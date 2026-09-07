@@ -12,7 +12,6 @@ import com.mini.order.feign.ProductFeignClient;
 import com.mini.order.feign.UserFeignClient;
 import com.mini.order.mapper.OrderMapper;
 import com.mini.order.service.OrderService;
-import io.seata.spring.annotation.GlobalTransactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,7 +26,6 @@ public class OrderServiceImpl implements OrderService {
     private final ProductFeignClient productFeignClient;
 
     @Override
-    @GlobalTransactional(name = "mini-shop-create-order", rollbackFor = Exception.class)
     @SentinelResource(value = "createOrder",
             blockHandler = "createOrderBlockHandler",
             fallback = "createOrderFallback")

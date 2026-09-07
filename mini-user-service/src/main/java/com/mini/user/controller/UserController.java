@@ -15,7 +15,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/{userId}")
-    public Result<UserDTO> getUser(@PathVariable Long userId) {
+    public Result<UserDTO> getUser(@PathVariable("userId") Long userId) {
         UserDTO user = userService.getUserById(userId);
         return Result.success(user);
     }

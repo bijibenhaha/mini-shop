@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface ProductFeignClient {
 
     @GetMapping("/{productId}")
-    Result<ProductDTO> getProduct(@PathVariable Long productId);
+    Result<ProductDTO> getProduct(@PathVariable("productId") Long productId);
 
     @PostMapping("/deduct/stock")
     Result<Void> deductStock(@RequestBody DeductStockDTO dto);
